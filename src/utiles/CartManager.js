@@ -3,10 +3,10 @@ import {nanoid} from "nanoid";
 import ProductManager from './ProductManager.js';
 
 
-const productALL = new ProductManager
+const productALL = new ProductManager("./src/data/products.json")
 class CartManager{
-    constructor(){
-        this.path = "./src/data/cart.json"
+    constructor(dire){
+        this.path =dire;
     }
 
     readCarts = async()=>{

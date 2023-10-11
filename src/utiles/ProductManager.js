@@ -1,8 +1,8 @@
 import {promises as fs} from 'fs';
 import {nanoid} from "nanoid";
 class ProductManager{
-    constructor(){
-        this.path = "./src/data/products.json"
+    constructor(dir){
+        this.path = dir;
     }
     readProducts = async()=>{
         let products = await fs.readFile(this.path, "utf-8")
