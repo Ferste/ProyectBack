@@ -1,12 +1,17 @@
 import {promises as fs} from 'fs';
 import {nanoid} from "nanoid";
 import ProductManager from './ProductManager.js';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import path from 'path';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-const productALL = new ProductManager("./src/data/products.json")
+const productALL = new ProductManager('products.json')
 class CartManager{
-    constructor(dire){
-        this.path =dire;
+    constructor(fileName) {
+        this.path = path.join(__dirname, fileName);
     }
 
     readCarts = async()=>{
@@ -28,34 +33,36 @@ class CartManager{
         return cartById
     };
 
-    addCarts = async () =>{
+    addCarts = async () => {
         let cartsOLD = await this.readCarts();
         let id = nanoid();
-        let cartsConcat= [{id:id, products : []}, ...cartsOLD]
+        let newCart = { id: id, products: [] }; 
+        let cartsConcat = [newCart, ...cartsOLD];
         await this.writeCarts(cartsConcat);
-        return "carrito agregado";
-    }
-    addProductInCart= async (cartId , productId)=>{
-        let cartById = await this.exist(cartId)
-        if(!cartById) return "carrito no encontrado" 
-        let productById = await productALL.exist(productId)
-        if(!productById) return "producto no encontrado"
+        return newCart; 
+    };
 
-        let cartsALL = await this.readCarts()
-        let cartFilter = cartsALL.filter((cart) => cart.id != cartId)
-
+    addProductInCart = async (cartId, productId) => {
+        let cartById = await this.exist(cartId);
+        if (!cartById) return "Carrito no encontrado";
+        let productById = await productALL.exist(productId);
+        if (!productById) return "Producto no encontrado";
+    
+        let cartsALL = await this.readCarts();
+        let cartFilter = cartsALL.filter((cart) => cart.id != cartId);
+    
         if (cartById.products.some((prod) => prod.id === productId)) {
             let moreproductInCart = cartById.products.find((prod) => prod.id === productId);
-            moreproductInCart.quantity += 1; 
+            moreproductInCart.quantity += 1;
             let cartsConcat = [cartById, ...cartFilter];
             await this.writeCarts(cartsConcat);
-            return "Se sumó el producto al carrito";
+        } else {
+            cartById.products.push({ id: productById.id, quantity: 1 });
+            let cartsConcat = [cartById, ...cartFilter];
+            await this.writeCarts(cartsConcat);
         }
-        cartById.products.push({id: productById.id, quantity: 1})
-        let cartsConcat = [cartById, ...cartFilter];
-        await this.writeCarts(cartsConcat)
-        return "Se agrego al carrito"
-    }
+        return cartById;
+    };
 
 }
 

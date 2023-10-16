@@ -5,7 +5,7 @@ import ProductManager from '../utiles/ProductManager.js';
 
 
 const ProductRouter = Router();
-const product = new ProductManager("./src/data/products.json");
+const product = new ProductManager('products.json');
 
 ProductRouter.get("/", async (req, res) => {
     const limit = parseInt(req.query.limit);
@@ -34,8 +34,6 @@ ProductRouter.delete("/:id", async (req, res) => {
     let id = req.params.id
     res.send(await product.deleteProducts(id));
 })
-
-
 
 ProductRouter.post("/", async (req, res) => {
     const newProduct = req.body;

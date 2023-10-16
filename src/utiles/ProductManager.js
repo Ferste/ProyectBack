@@ -1,8 +1,14 @@
 import {promises as fs} from 'fs';
 import {nanoid} from "nanoid";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import path from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 class ProductManager{
-    constructor(dir){
-        this.path = dir;
+    constructor(fileName) {
+        this.path = path.join(__dirname, fileName);
     }
     readProducts = async()=>{
         let products = await fs.readFile(this.path, "utf-8")
@@ -18,7 +24,7 @@ class ProductManager{
         product.id = nanoid ();
         let productALL= [...productsOLD , product]
         await this.writeProducts(productALL);
-        return "Prodcuto agregado";
+        return "Producto agregado";
     }
     getProducts = async ()=> {
         return await this.readProducts()
@@ -30,9 +36,9 @@ class ProductManager{
         if (existProducts){
             let filterProducts = products.filter(prod =>prod.id != id)
             await this.writeProducts(filterProducts)
-            return "Prodcuto eliminado"
+            return "Producto eliminado"
         }
-        return "producto inexistente"
+        return "Producto inexistente"
     }
 
     exist = async(id)=>{
@@ -60,7 +66,7 @@ class ProductManager{
     
     getProductsById = async (id)=> {
         let productById= await this.exist(id)
-        if(!productById) return "Prodcuto no encontrado" 
+        if(!productById) return "Producto no encontrado" 
         return productById
     };
 }
